@@ -47,7 +47,8 @@ git remote -v
   - `.bmad-core/` - BMAD core framework
   - `.bmad-infrastructure-devops/` - Infrastructure tools
   - `.claude/` - Claude Code configurations
-  - Team documentation (like this file)
+  - `web-bundles/` - BMAD web agent bundles
+  - `ASADDU-TEAM-WORKFLOW.md` - This documentation
   - Project planning docs from BMAD workflow
 
 ## Workflows
@@ -154,6 +155,7 @@ hatchet/
 ├── .bmad-core/                    # Only in asaddu-dev branch
 ├── .bmad-infrastructure-devops/   # Only in asaddu-dev branch
 ├── .claude/                       # Only in asaddu-dev branch
+├── web-bundles/                   # Only in asaddu-dev branch
 ├── ASADDU-TEAM-WORKFLOW.md        # Only in asaddu-dev branch
 ├── docs/
 │   ├── prd.md                     # Team planning docs (asaddu-dev only)
