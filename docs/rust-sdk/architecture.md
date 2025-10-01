@@ -38,6 +38,7 @@ This document supplements existing project architecture by defining how new comp
 | Change | Date | Version | Description | Author |
 |--------|------|---------|-------------|--------|
 | Initial creation | 2025-10-01 | 0.1.0 | Initial brownfield architecture for Rust SDK | Winston (Architect) |
+| Updated dependencies | 2025-10-01 | 0.1.1 | Updated all crate versions to current October 2025 releases; added missing dependencies (anyhow, config, tower, tracing-subscriber) | Winston (Architect) |
 
 ## Enhancement Scope and Integration Strategy
 
@@ -81,15 +82,56 @@ This document supplements existing project architecture by defining how new comp
 
 ### New Technology Additions
 
+_Note: Versions verified current as of October 2025_
+
 | Technology | Version | Purpose | Rationale | Integration Method |
 |-----------|---------|---------|-----------|-------------------|
-| Tokio | 1.x | Async runtime for SDK | Industry-standard async runtime with excellent gRPC support via tonic; multi-threaded scheduler for concurrent task execution | Core async runtime; required by tonic and reqwest |
-| Tonic | 0.12.x | gRPC client framework | De facto standard for gRPC in Rust; bidirectional streaming support; excellent integration with tokio | Generate client stubs from existing .proto files using tonic-build |
-| Prost | 0.13.x | Protobuf serialization | Used by tonic for protobuf codegen; efficient zero-copy serialization | Build-time code generation in build.rs |
-| Serde | 1.x | JSON serialization/deserialization | Type-safe serialization for workflow inputs/outputs and REST API | Derive macros for workflow data types |
-| Reqwest | 0.12.x | HTTP/REST client | Async HTTP client with tokio support for REST API operations | Admin client implementation |
-| Thiserror | 2.x | Error type definitions | Ergonomic error handling with derive macros | Custom SDK error types |
-| Tracing | 0.1.x | Structured logging | Compatibility with existing server logging; async-aware instrumentation | SDK-wide logging and diagnostics |
+| Tokio | 1.47 | Async runtime for SDK | Industry-standard async runtime with excellent gRPC support via tonic; multi-threaded scheduler for concurrent task execution | Core async runtime; required by tonic and reqwest |
+| Tonic | 0.14 | gRPC client framework | De facto standard for gRPC in Rust; bidirectional streaming support; excellent integration with tokio | Generate client stubs from existing .proto files using tonic-build 0.14 |
+| Prost | 0.14 | Protobuf serialization | Used by tonic for protobuf codegen; efficient zero-copy serialization | Build-time code generation in build.rs |
+| Serde | 1.0 | JSON serialization/deserialization | Type-safe serialization for workflow inputs/outputs and REST API | Derive macros for workflow data types |
+| Reqwest | 0.12 | HTTP/REST client | Async HTTP client with tokio support for REST API operations | Admin client implementation |
+| Thiserror | 2.0 | Error type definitions | Ergonomic error handling with derive macros | Custom SDK error types |
+| Anyhow | 1.0 | Flexible error handling | Context-rich errors for application-level error handling | Error propagation in SDK internals |
+| Config | 0.14 | Configuration management | Multi-source config loading (env vars, files, programmatic) | ClientConfig initialization |
+| Jsonwebtoken | 9 | JWT token parsing | Parse tenant_id from JWT claims for authentication | Token validation and extraction |
+| Tower | 0.5 | Service middleware | Retry policies, load balancing, interceptors for gRPC | Middleware layer for DispatcherClient |
+| Tracing | 0.1 | Structured logging | Compatibility with existing server logging; async-aware instrumentation | SDK-wide logging and diagnostics |
+| Tracing-subscriber | 0.3 | Tracing output | Configurable log formatting and filtering | User-configurable logging setup |
+
+### Cargo.toml Dependencies
+
+**Runtime Dependencies:**
+```toml
+[dependencies]
+tokio = { version = "1.47", features = ["full"] }
+tonic = "0.14"
+prost = "0.14"
+reqwest = { version = "0.12", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "2.0"
+anyhow = "1.0"
+config = "0.14"
+jsonwebtoken = "9"
+tower = "0.5"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+```
+
+**Build-time Dependencies:**
+```toml
+[build-dependencies]
+tonic-build = "0.14"
+```
+
+**Optional Feature Flags:**
+```toml
+[features]
+default = ["native-tls"]
+native-tls = ["reqwest/native-tls", "tonic/transport"]
+rustls-tls = ["reqwest/rustls-tls", "tonic/tls"]
+```
 
 ## Data Models and Schema Changes
 
