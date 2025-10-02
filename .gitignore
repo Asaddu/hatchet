@@ -36,6 +36,9 @@ node_modules
 # Local docs directories
 /docs/.obsidian
 
+# Community SDK reference (can be re-cloned from GitHub)
+/docs/rust-sdk/community-rust-sdk-reference
+
 # Local .terraform directories
 **/.terraform/*
 
